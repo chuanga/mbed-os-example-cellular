@@ -119,6 +119,7 @@ nsapi_error_t do_connect()
 nsapi_error_t test_send_recv()
 {
     nsapi_size_or_error_t retcode;
+    int i;
 #if MBED_CONF_APP_SOCK_TYPE == TCP
     TCPSocket sock;
 #else
@@ -157,6 +158,10 @@ nsapi_error_t test_send_recv()
         snprintf(print_text, PRINT_TEXT_LENGTH, "TCP: connected with %s server\n", host_name);
         print_function(print_text);
     }
+#endif
+    i = 0;
+    while (i < 50) { // send 50 packets
+#if MBED_CONF_APP_SOCK_TYPE == TCP
     retcode = sock.send((void*) echo_string, sizeof(echo_string));
     if (retcode < 0) {
         snprintf(print_text, PRINT_TEXT_LENGTH, "TCPSocket.send() fails, code: %d\n", retcode);
@@ -182,7 +187,9 @@ nsapi_error_t test_send_recv()
 
     n = sock.recvfrom(&sock_addr, (void*) recv_buf, sizeof(recv_buf));
 #endif
-
+        i++;
+        wait(2); // wait 2 seconds before sending next packet 
+    } 
     sock.close();
 
     if (n > 0) {

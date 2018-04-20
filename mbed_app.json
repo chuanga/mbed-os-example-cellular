@@ -31,7 +31,9 @@
             "lwip.tcp-enabled": true,
             "platform.stdio-convert-newlines": true,
             "platform.stdio-baud-rate": 115200,
-            "platform.default-serial-baud-rate": 9600
+            "platform.default-serial-baud-rate": 9600,
+	    "target.stdio_uart_tx": "UART2_TX",
+	    "target.stdio_uart_rx": "UART2_RX"
         }
     }
 }

@@ -1,6 +1,6 @@
 {
     "config": {
-        "sock-type": "TCP",
+        "sock-type": "UDP",
         "modem_trace": {
             "help": "Turns AT command trace on/off from the cellular modem, defaults to off",
             "value": false
@@ -27,11 +27,11 @@
             "target.features_add": ["LWIP", "COMMON_PAL"],
             "lwip.ipv4-enabled": true,
             "lwip.ethernet-enabled": false,
-            "lwip.ppp-enabled": true,
+            "lwip.ppp-enabled": false,
             "lwip.tcp-enabled": true,
             "platform.stdio-convert-newlines": true,
             "platform.stdio-baud-rate": 115200,
-            "platform.default-serial-baud-rate": 115200
+            "platform.default-serial-baud-rate": 9600
         }
     }
 }

@@ -188,10 +188,13 @@ nsapi_error_t test_send_recv()
         print_function(print_text);
     }
 
-    n = sock.recvfrom(&sock_addr, (void*) recv_buf, sizeof(recv_buf));
+    netcode = sock.recvfrom(&sock_addr, (void*) recv_buf, sizeof(recv_buf));
 #endif
-        if (n > 0) {
-            snprintf(print_text, PRINT_TEXT_LENGTH, "Received from echo server %d Bytes\n", n);
+        if (netcode > 0) {
+            snprintf(print_text, PRINT_TEXT_LENGTH, "UDP: Received %d Bytes %s from %s tries: %d\n", retcode, recv_buf, host_name, i + 1);
+            print_function(print_text);
+        } else {
+            snprintf(print_text, PRINT_TEXT_LENGTH, "UDPSocket.recvfrom() fails after %d tries, code: %d\n", i + 1, retcode);
             print_function(print_text);
         }
         i++;

@@ -41,6 +41,7 @@
 // Number of retries /
 #define RETRY_COUNT 3
 #define NUM_PACKETS 50
+#define PACKET_INTERVAL 2 // 2 seconds
 
 
 
@@ -194,7 +195,7 @@ nsapi_error_t test_send_recv()
             print_function(print_text);
         }
         i++;
-        wait(2); // wait 2 seconds before sending next packet 
+        wait(PACKET_INTERVAL); // wait PACKET_INTERVAL seconds before sending next packet 
     } 
     sock.close();
     return 0;

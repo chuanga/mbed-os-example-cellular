@@ -18,6 +18,7 @@
 #include "common_functions.h"
 #include "UDPSocket.h"
 #include "OnboardCellularInterface.h"
+#include "mbed-trace/mbed_trace.h"
 
 #define UDP 0
 #define TCP 1
@@ -203,7 +204,9 @@ nsapi_error_t test_send_recv()
 
 int main()
 {
-
+    /* initialized trace log */
+    mbed_trace_init();
+    
     iface.modem_debug_on(MBED_CONF_APP_MODEM_TRACE);
     /* Set Pin code for SIM card */
     iface.set_sim_pin(MBED_CONF_APP_SIM_PIN_CODE);

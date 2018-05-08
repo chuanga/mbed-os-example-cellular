@@ -188,9 +188,9 @@ nsapi_error_t test_send_recv()
         print_function(print_text);
     }
 
-    netcode = sock.recvfrom(&sock_addr, (void*) recv_buf, sizeof(recv_buf));
+    retcode = sock.recvfrom(&sock_addr, (void*) recv_buf, sizeof(recv_buf));
 #endif
-        if (netcode > 0) {
+        if (retcode > 0) {
             snprintf(print_text, PRINT_TEXT_LENGTH, "UDP: Received %d Bytes %s from %s tries: %d\n", retcode, recv_buf, host_name, i + 1);
             print_function(print_text);
         } else {

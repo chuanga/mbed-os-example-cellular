@@ -40,6 +40,7 @@
 
 // Number of retries /
 #define RETRY_COUNT 3
+#define NUM_PACKETS 50
 
 
 
@@ -161,13 +162,13 @@ nsapi_error_t test_send_recv()
     }
 #endif
     i = 0;
-    while (i < 50) { // send 50 packets
+    while (i < NUM_PACKETS) { // send NUM_PACKETS packets
 #if MBED_CONF_APP_SOCK_TYPE == TCP
     retcode = sock.send((void*) echo_string, sizeof(echo_string));
     if (retcode < 0) {
         snprintf(print_text, PRINT_TEXT_LENGTH, "TCPSocket.send() fails, code: %d\n", retcode);
         print_function(print_text);
-        return -1;
+        // return -1;  // Don't exit. Continue with the next packet
     } else {
         snprintf(print_text, PRINT_TEXT_LENGTH, "TCP: Sent %d Bytes to %s\n", retcode, host_name);
         print_function(print_text);
@@ -178,9 +179,9 @@ nsapi_error_t test_send_recv()
 
     retcode = sock.sendto(sock_addr, (void*) echo_string, sizeof(echo_string));
     if (retcode < 0) {
-        snprintf(print_text, PRINT_TEXT_LENGTH, "UDPSocket.sendto() fails, code: %d\n", retcode);
+        snprintf(print_text, PRINT_TEXT_LENGTH, "UDPSocket.sendto() fails, pkt #: %d, code: %d\n", i+1, retcode);
         print_function(print_text);
-        return -1;
+        // return -1; // Don't exit. Continue with the next package
     } else {
         snprintf(print_text, PRINT_TEXT_LENGTH, "UDP: Sent %d Bytes to %s\n", retcode, host_name);
         print_function(print_text);
@@ -188,18 +189,15 @@ nsapi_error_t test_send_recv()
 
     n = sock.recvfrom(&sock_addr, (void*) recv_buf, sizeof(recv_buf));
 #endif
+        if (n > 0) {
+            snprintf(print_text, PRINT_TEXT_LENGTH, "Received from echo server %d Bytes\n", n);
+            print_function(print_text);
+        }
         i++;
         wait(2); // wait 2 seconds before sending next packet 
     } 
     sock.close();
-
-    if (n > 0) {
-        snprintf(print_text, PRINT_TEXT_LENGTH, "Received from echo server %d Bytes\n", n);
-        print_function(print_text);
-        return 0;
-    }
-
-    return -1;
+    return 0;
 }
 
 int main()

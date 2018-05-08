@@ -5,6 +5,11 @@
             "help": "Turns AT command trace on/off from the cellular modem, defaults to off",
             "value": false
         },
+	"trace-level": {
+	     "help":"Options are TRACE_LEVEL_ERROR,TRACE_LEVEL_WARN,TRACE_LEVEL_INFO,TRACE_LEVEL_DEBUG",
+	     "macro_name":"MBED_TRACE_MAX_LEVEL",
+	     "value":"TRACE_LEVEL_INFO"
+	},
         "sim-pin-code": {
             "help": "SIM PIN code",
             "value": "\"1234\""
@@ -25,6 +30,7 @@
     "target_overrides": {
         "*": {
             "target.features_add": ["LWIP", "COMMON_PAL"],
+	    "mbed-trace.enable":true,
             "lwip.ipv4-enabled": true,
             "lwip.ethernet-enabled": false,
             "lwip.ppp-enabled": false,

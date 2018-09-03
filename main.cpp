@@ -17,7 +17,8 @@
 #include "mbed.h"
 #include "common_functions.h"
 #include "UDPSocket.h"
-#include "OnboardCellularInterface.h"
+//#include "OnboardCellularInterface.h"
+#include "EasyCellularConnection.h"
 #include "mbed-trace/mbed_trace.h"
 
 #define UDP 0
@@ -46,7 +47,8 @@
 
 
 // CellularInterface object
-OnboardCellularInterface iface;
+//OnboardCellularInterface iface;
+EasyCellularConnection iface;
 
 // Echo server hostname
 const char *host_name = "echo.mbedcloudtesting.com";

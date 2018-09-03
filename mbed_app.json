@@ -29,6 +29,7 @@
 	},
     "target_overrides": {
         "*": {
+	    "target.clock_source": "USE_PLL_HSE_XTAL",
             "target.features_add": ["LWIP", "COMMON_PAL"],
 	    "mbed-trace.enable":true,
             "lwip.ipv4-enabled": true,
@@ -39,7 +40,8 @@
             "platform.stdio-baud-rate": 115200,
             "platform.default-serial-baud-rate": 9600,
 	    "target.stdio_uart_tx": "UART2_TX",
-	    "target.stdio_uart_rx": "UART2_RX"
+	    "target.stdio_uart_rx": "UART2_RX",
+	    "cellular.debug-at": false
         }
     }
 }

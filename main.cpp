@@ -59,7 +59,7 @@ const int port = 7;
 Mutex PrintMutex;
 Thread dot_thread(osPriorityNormal, 512);
 
-#define PRINT_TEXT_LENGTH 128
+#define PRINT_TEXT_LENGTH 256
 char print_text[PRINT_TEXT_LENGTH];
 void print_function(const char *input_string)
 {
@@ -133,8 +133,13 @@ nsapi_error_t test_send_recv()
 
     retcode = sock.open(&iface);
     if (retcode != NSAPI_ERROR_OK) {
+#if MBED_CONF_APP_SOCK_TYPE == TCP
+        snprintf(print_text, PRINT_TEXT_LENGTH, "TCPSocket.open() fails, code: %d\n", retcode);
+        print_function(print_text);
+#else
         snprintf(print_text, PRINT_TEXT_LENGTH, "UDPSocket.open() fails, code: %d\n", retcode);
         print_function(print_text);
+#endif
         return -1;
     }
 
@@ -177,7 +182,14 @@ nsapi_error_t test_send_recv()
         print_function(print_text);
     }
 
-    n = sock.recv((void*) recv_buf, sizeof(recv_buf));
+    retcode = sock.recv((void*) recv_buf, sizeof(recv_buf));
+    if (retcode > 0) {
+            snprintf(print_text, PRINT_TEXT_LENGTH, "TCP: Received %d Bytes %s from %s tries: %d\n", retcode, recv_buf, host_name, i + 1);
+            print_function(print_text);
+    } else {
+            snprintf(print_text, PRINT_TEXT_LENGTH, "TCPSocket.recvfrom() fails after %d tries, code: %d\n", i + 1, retcode);
+            print_function(print_text);
+    }
 #else
 
     retcode = sock.sendto(sock_addr, (void*) echo_string, sizeof(echo_string));
@@ -191,14 +203,15 @@ nsapi_error_t test_send_recv()
     }
 
     retcode = sock.recvfrom(&sock_addr, (void*) recv_buf, sizeof(recv_buf));
-#endif
-        if (retcode > 0) {
+    if (retcode > 0) {
             snprintf(print_text, PRINT_TEXT_LENGTH, "UDP: Received %d Bytes %s from %s tries: %d\n", retcode, recv_buf, host_name, i + 1);
             print_function(print_text);
-        } else {
+    } else {
             snprintf(print_text, PRINT_TEXT_LENGTH, "UDPSocket.recvfrom() fails after %d tries, code: %d\n", i + 1, retcode);
             print_function(print_text);
-        }
+
+    }
+#endif
         i++;
         wait(PACKET_INTERVAL); // wait PACKET_INTERVAL seconds before sending next packet 
     } 
@@ -206,8 +219,60 @@ nsapi_error_t test_send_recv()
     return 0;
 }
 
+/*nsapi_error_t AT_CellularInformation::get_info(const char *cmd, char *buf, size_t buf_size)
+{
+    _at.lock();
+
+    _at.cmd_start(cmd);
+    _at.cmd_stop();
+    _at.set_delimiter(0);
+    _at.resp_start();
+    _at.read_string(buf, buf_size-1);
+    _at.resp_stop();
+    _at.set_default_delimiter();
+
+    return _at.unlock_return_error();
+}
+void get_modem_info()
+{
+    UARTSerial *uart_ptr = iface.get_serial();
+    ATHandler *atHandler;
+    char rsp_buf[100];
+    int rsp_buf_len = 100;
+
+    if (uart_ptr) {
+        atHandler = get_at_handler((FileHandle *) uart_ptr);
+        if (ATHandler) {
+            atHandler->lock();
+            atHandler->cmd_start("AT+CGMR");
+            atHandler->cmd_stop();
+            atHandler->set_delimiter(0);
+            atHandler->resp_start();
+            atHandler->read_string(rsp_buf, (rsp_buf_len -1));
+            atHandler->resp_stop();
+            atHandler->set_default_delimiter();
+            atHandler->unlock_return_error();    
+        }
+    }
+}*/
+void get_modem_info()
+{
+    CellularInformation *modem_info = iface.get_device()->open_information(iface.get_serial());
+    char rsp_buf[200]="";
+    int rsp_buf_len = 200;
+
+    if (modem_info)
+    {
+        modem_info->get_revision(rsp_buf, (rsp_buf_len -1));
+        snprintf(print_text, PRINT_TEXT_LENGTH, "manufacture info = %s\n", rsp_buf);
+        print_function(print_text);
+    } else {
+        print_function("modem_info is NULL !!!!\n");
+    }
+}
 int main()
 {
+    nsapi_error_t retcode; 
     /* initialized trace log */
     mbed_trace_init();
     
@@ -218,13 +283,16 @@ int main()
     /* Set network credentials here, e.g., APN*/
     iface.set_credentials(MBED_CONF_APP_APN, MBED_CONF_APP_USERNAME, MBED_CONF_APP_PASSWORD);
 
+    
+
     print_function("\n\nmbed-os-example-cellular\n");
     print_function("Establishing connection ");
     dot_thread.start(dot_event);
 
     /* Attempt to connect to a cellular network */
     if (do_connect() == NSAPI_ERROR_OK) {
-        nsapi_error_t retcode = test_send_recv();
+        get_modem_info();
+        retcode = test_send_recv();
         if (retcode == NSAPI_ERROR_OK) {
             print_function("\n\nSuccess. Exiting \n\n");
             return 0;

@@ -31,6 +31,7 @@
         "*": {
 	    "target.clock_source": "USE_PLL_HSE_XTAL",
             "target.features_add": ["LWIP", "COMMON_PAL"],
+	    "target.network-default-interface-type": "CELLULAR",
 	    "mbed-trace.enable":true,
             "lwip.ipv4-enabled": true,
             "lwip.ethernet-enabled": false,
@@ -41,7 +42,10 @@
             "platform.default-serial-baud-rate": 9600,
 	    "target.stdio_uart_tx": "UART2_TX",
 	    "target.stdio_uart_rx": "UART2_RX",
-	    "cellular.debug-at": false
+	    "cellular.debug-at": false,
+	    "nsapi.default-cellular-apn": 0,
+	    "nsapi.default-cellular-username": 0,
+	    "nsapi.default-cellular-password": 0
         }
     }
 }
